@@ -1,0 +1,210 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  EMPLOYEE
+}
+
+enum CarStatus {
+  AVAILABLE
+  SOLD
+  RESERVED
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  HYBRID
+  ELECTRIC
+  CNG
+}
+
+enum Transmission {
+  MANUAL
+  AUTOMATIC
+  CVT
+  AMT
+}
+
+enum Condition {
+  NEW
+  USED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CHEQUE
+  FINANCING
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          UserRole  @default(EMPLOYEE)
+  isActive      Boolean   @default(true)
+  commission    Float?    // Percentage for employees
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  sales         Sale[]
+  
+  @@map("users")
+}
+
+model Car {
+  id              String      @id @default(uuid())
+  make            String
+  model           String
+  variant         String?
+  year            Int
+  price           Float
+  mileage         Float?      // in km
+  fuelType        FuelType
+  transmission    Transmission
+  color           String
+  engineCapacity  Float       // in CC
+  condition       Condition
+  vin             String?     @unique
+  chassisNumber   String?
+  status          CarStatus   @default(AVAILABLE)
+  description     String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  images          CarImage[]
+  sale            Sale?
+  wishlistItems   Wishlist[]
+  inquiries       Inquiry[]
+  
+  @@index([make, model])
+  @@index([status])
+  @@index([year])
+  @@map("cars")
+}
+
+model CarImage {
+  id        String   @id @default(uuid())
+  carId     String
+  imageUrl  String
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+  
+  @@index([carId])
+  @@map("car_images")
+}
+
+model Customer {
+  id          String   @id @default(uuid())
+  name        String
+  email       String?
+  phone       String
+  address     String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  sales       Sale[]
+  
+  @@index([phone])
+  @@map("customers")
+}
+
+model Sale {
+  id            String        @id @default(uuid())
+  carId         String        @unique
+  customerId    String
+  soldById      String        // Employee who made the sale
+  salePrice     Float
+  discount      Float         @default(0)
+  paymentMethod PaymentMethod
+  saleDate      DateTime      @default(now())
+  invoiceNumber String        @unique
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  car           Car           @relation(fields: [carId], references: [id])
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  soldBy        User          @relation(fields: [soldById], references: [id])
+  
+  @@index([saleDate])
+  @@index([soldById])
+  @@map("sales")
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  category    String   // rent, utilities, marketing, maintenance, etc.
+  amount      Float
+  description String?
+  expenseDate DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([expenseDate])
+  @@index([category])
+  @@map("expenses")
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  carId     String
+  customerEmail String
+  createdAt DateTime @default(now())
+  
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+  
+  @@unique([carId, customerEmail])
+  @@index([customerEmail])
+  @@map("wishlist")
+}
+
+model Inquiry {
+  id        String   @id @default(uuid())
+  carId     String?
+  name      String
+  email     String
+  phone     String
+  message   String
+  status    String   @default("pending") // pending, contacted, resolved
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  car       Car?     @relation(fields: [carId], references: [id], onDelete: SetNull)
+  
+  @@index([carId])
+  @@index([status])
+  @@map("inquiries")
+}
+
+model Settings {
+  id              String   @id @default(uuid())
+  showroomName    String
+  logo            String?
+  address         String?
+  phone           String?
+  email           String?
+  taxPercentage   Float    @default(0)
+  currency        String   @default("PKR")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("settings")
+}
+
+
