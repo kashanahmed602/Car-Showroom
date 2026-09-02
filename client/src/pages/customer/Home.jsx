@@ -31,7 +31,7 @@ const PublicHome = () => {
       });
       params.append('status', 'AVAILABLE');
 
-      const response = await axios.get(`/api/public/cars?${params}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/public/cars?${params}`);
       setCars(response.data.data);
     } catch (error) {
       console.error('Error fetching cars:', error);
@@ -64,7 +64,7 @@ const PublicHome = () => {
           <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-2000"></div>
           <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-blue-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-4000"></div>
         </div>
-        
+
         <div className="relative container mx-auto px-4 py-20 md:py-32">
           <div className="text-center animate-fade-in">
             <h1 className="text-6xl md:text-7xl font-extrabold mb-6 font-heading tracking-tight">
@@ -179,7 +179,7 @@ const PublicHome = () => {
             >
               {/* Gradient Overlay on Hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
+
               {/* Image Container */}
               <div className="relative h-64 overflow-hidden">
                 {car.images && car.images.length > 0 ? (

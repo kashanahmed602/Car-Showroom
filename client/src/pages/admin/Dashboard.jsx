@@ -24,7 +24,7 @@ const Dashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/api/reports/dashboard');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/reports/dashboard`);
       setStats(response.data.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -118,13 +118,13 @@ const Dashboard = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="model" stroke="#6b7280" />
               <YAxis stroke="#6b7280" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#fff', 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#fff',
                   border: '1px solid #e5e7eb',
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                }} 
+                }}
               />
               <Legend />
               <Bar dataKey="salesCount" fill="#667eea" radius={[8, 8, 0, 0]} />
@@ -142,13 +142,13 @@ const Dashboard = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="name" stroke="#6b7280" />
               <YAxis stroke="#6b7280" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#fff', 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#fff',
                   border: '1px solid #e5e7eb',
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                }} 
+                }}
               />
               <Legend />
               <Bar dataKey="sales" fill="#10b981" radius={[8, 8, 0, 0]} />

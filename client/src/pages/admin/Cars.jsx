@@ -25,7 +25,7 @@ const Cars = () => {
       params.append('page', filters.page);
       params.append('limit', filters.limit);
 
-      const response = await axios.get(`/api/cars?${params}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/cars?${params}`);
       setCars(response.data.data);
     } catch (error) {
       console.error('Error fetching cars:', error);
@@ -42,7 +42,7 @@ const Cars = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`/api/cars/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/cars/${id}`);
         await showSuccess('Car deleted successfully!', 'Deleted');
         fetchCars();
       } catch (error) {
@@ -139,13 +139,12 @@ const Cars = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      car.status === 'AVAILABLE'
-                        ? 'bg-green-100 text-green-800'
-                        : car.status === 'SOLD'
+                    className={`px-2 py-1 text-xs rounded-full ${car.status === 'AVAILABLE'
+                      ? 'bg-green-100 text-green-800'
+                      : car.status === 'SOLD'
                         ? 'bg-red-100 text-red-800'
                         : 'bg-yellow-100 text-yellow-800'
-                    }`}
+                      }`}
                   >
                     {car.status}
                   </span>

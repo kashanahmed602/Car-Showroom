@@ -22,7 +22,7 @@ const ExpenseForm = () => {
 
   const fetchExpense = async () => {
     try {
-      const response = await axios.get(`/api/expenses/${id}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/expenses/${id}`);
       const expense = response.data.data;
       setFormData({
         category: expense.category,
@@ -42,11 +42,11 @@ const ExpenseForm = () => {
     try {
       showLoading('Saving expense...');
       if (id) {
-        await axios.put(`/api/expenses/${id}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/expenses/${id}`, formData);
         closeLoading();
         await showSuccess('Expense updated successfully!', 'Updated');
       } else {
-        await axios.post('/api/expenses', formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/expenses`, formData);
         closeLoading();
         await showSuccess('Expense created successfully!', 'Created');
       }

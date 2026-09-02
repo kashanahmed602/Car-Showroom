@@ -14,7 +14,7 @@ const Customers = () => {
   const fetchCustomers = async () => {
     try {
       const params = search ? `?search=${search}` : '';
-      const response = await axios.get(`/api/customers${params}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/customers${params}`);
       setCustomers(response.data.data);
     } catch (error) {
       console.error('Error fetching customers:', error);

@@ -13,7 +13,7 @@ const Sales = () => {
 
   const fetchSales = async () => {
     try {
-      const response = await axios.get('/api/sales');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/sales`);
       setSales(response.data.data);
     } catch (error) {
       console.error('Error fetching sales:', error);
@@ -25,7 +25,7 @@ const Sales = () => {
   const handleDownloadInvoice = async (saleId) => {
     showLoading('Generating invoice...');
     try {
-      const response = await axios.get(`/api/sales/${saleId}/invoice`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/sales/${saleId}/invoice`, {
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));

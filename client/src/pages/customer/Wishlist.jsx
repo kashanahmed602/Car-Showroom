@@ -17,7 +17,7 @@ const Wishlist = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`/api/public/wishlist/${email}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/public/wishlist/${email}`);
       setWishlist(response.data.data);
       setSubmitted(true);
     } catch (error) {
@@ -33,10 +33,10 @@ const Wishlist = () => {
       'This car will be removed from your wishlist.',
       'Remove from Wishlist?'
     );
-    
+
     if (result.isConfirmed) {
       try {
-        await axios.delete(`/api/public/wishlist/${carId}?email=${email}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/public/wishlist/${carId}?email=${email}`);
         await showSuccess('Car removed from wishlist successfully!', 'Removed');
         fetchWishlist();
       } catch (error) {
@@ -162,7 +162,7 @@ const Wishlist = () => {
               >
                 {/* Gradient Overlay on Hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
+
                 {/* Image Container */}
                 <div className="relative h-64 overflow-hidden">
                   {item.car.images && item.car.images.length > 0 ? (

@@ -27,9 +27,9 @@ const Reports = () => {
   const fetchReports = async () => {
     try {
       const [salesRes, profitRes, employeeRes] = await Promise.all([
-        axios.get('/api/reports/sales'),
-        axios.get('/api/reports/profit'),
-        axios.get('/api/reports/employees')
+        axios.get(`${import.meta.env.VITE_API_URL}/reports/sales`),
+        axios.get(`${import.meta.env.VITE_API_URL}/reports/profit`),
+        axios.get(`${import.meta.env.VITE_API_URL}/reports/employees`)
       ]);
       setSalesReport(salesRes.data);
       setProfitReport(profitRes.data);
@@ -44,7 +44,7 @@ const Reports = () => {
   const handleExport = async () => {
     showLoading('Generating report...');
     try {
-      const response = await axios.get('/api/reports/export/sales', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/reports/export/sales`, {
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));

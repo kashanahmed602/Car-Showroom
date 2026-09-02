@@ -19,7 +19,7 @@ const Settings = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get('/api/settings');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/settings`);
       setFormData(response.data.data);
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -37,7 +37,7 @@ const Settings = () => {
         formDataToSend.append(key, formData[key]);
       });
 
-      await axios.put('/api/settings', formDataToSend, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/settings`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

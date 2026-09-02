@@ -23,7 +23,7 @@ const CustomerForm = () => {
 
   const fetchCustomer = async () => {
     try {
-      const response = await axios.get(`/api/customers/${id}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/customers/${id}`);
       setFormData(response.data.data);
     } catch (error) {
       console.error('Error fetching customer:', error);
@@ -37,11 +37,11 @@ const CustomerForm = () => {
     try {
       showLoading('Saving customer...');
       if (id) {
-        await axios.put(`/api/customers/${id}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/customers/${id}`, formData);
         closeLoading();
         await showSuccess('Customer updated successfully!', 'Updated');
       } else {
-        await axios.post('/api/customers', formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/customers`, formData);
         closeLoading();
         await showSuccess('Customer created successfully!', 'Created');
       }

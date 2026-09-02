@@ -31,9 +31,9 @@ const SaleForm = () => {
   const fetchData = async () => {
     try {
       const [carsRes, customersRes, employeesRes] = await Promise.all([
-        axios.get('/api/cars?status=AVAILABLE'),
-        axios.get('/api/customers'),
-        axios.get('/api/employees')
+        axios.get(`${import.meta.env.VITE_API_URL}/cars?status=AVAILABLE`),
+        axios.get(`${import.meta.env.VITE_API_URL}/customers`),
+        axios.get(`${import.meta.env.VITE_API_URL}/employees`)
       ]);
       setCars(carsRes.data.data);
       setCustomers(customersRes.data.data);
@@ -45,7 +45,7 @@ const SaleForm = () => {
 
   const fetchSale = async () => {
     try {
-      const response = await axios.get(`/api/sales/${id}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/sales/${id}`);
       const sale = response.data.data;
       setFormData({
         carId: sale.carId,
@@ -69,11 +69,11 @@ const SaleForm = () => {
     try {
       showLoading('Saving sale...');
       if (id) {
-        await axios.put(`/api/sales/${id}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/sales/${id}`, formData);
         closeLoading();
         await showSuccess('Sale updated successfully!', 'Updated');
       } else {
-        await axios.post('/api/sales', formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/sales`, formData);
         closeLoading();
         await showSuccess('Sale created successfully!', 'Created');
       }

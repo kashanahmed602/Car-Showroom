@@ -36,7 +36,7 @@ const CarForm = () => {
 
   const fetchCar = async () => {
     try {
-      const response = await axios.get(`/api/cars/${id}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/cars/${id}`);
       const carData = response.data.data;
       setFormData(carData);
       setImages(carData.images || []);
@@ -54,13 +54,13 @@ const CarForm = () => {
       let carId = id;
       if (!id) {
         // Create new car first
-        const createResponse = await axios.post('/api/cars', formData);
+        const createResponse = await axios.post(`${import.meta.env.VITE_API_URL}/cars`, formData);
         carId = createResponse.data.data.id;
         closeLoading();
         await showSuccess('Car created successfully!', 'Success');
       } else {
         // Update existing car
-        await axios.put(`/api/cars/${id}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/cars/${id}`, formData);
         closeLoading();
         await showSuccess('Car updated successfully!', 'Success');
       }
@@ -96,7 +96,7 @@ const CarForm = () => {
         formData.append('images', file);
       });
 
-      await axios.post(`/api/cars/${carId}/images`, formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/cars/${carId}/images`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -123,7 +123,7 @@ const CarForm = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`/api/cars/images/${imageId}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/cars/images/${imageId}`);
         setImages(images.filter(img => img.id !== imageId));
         showSuccess('Image deleted successfully!', 'Deleted');
       } catch (error) {
@@ -136,8 +136,8 @@ const CarForm = () => {
   const handleSetPrimary = async (imageId) => {
     try {
       // Set new primary (backend will handle unsetting others)
-      await axios.put(`/api/cars/${id}/images/${imageId}`, { isPrimary: true });
-      
+      await axios.put(`${import.meta.env.VITE_API_URL}/cars/${id}/images/${imageId}`, { isPrimary: true });
+
       // Update local state
       setImages(images.map(img => ({
         ...img,
@@ -370,7 +370,7 @@ const CarForm = () => {
         {/* Image Upload Section */}
         <div className="mt-8 border-t pt-6">
           <h2 className="text-xl font-semibold mb-4">Car Images</h2>
-          
+
           {/* Existing Images */}
           {images.length > 0 && (
             <div className="mb-6">

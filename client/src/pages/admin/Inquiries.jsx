@@ -28,7 +28,7 @@ const Inquiries = () => {
       params.append('page', filters.page);
       params.append('limit', filters.limit);
 
-      const response = await axios.get(`/api/inquiries?${params}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/inquiries?${params}`);
       setInquiries(response.data.data);
     } catch (error) {
       console.error('Error fetching inquiries:', error);
@@ -40,7 +40,7 @@ const Inquiries = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/api/inquiries/stats');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/inquiries/stats`);
       setStats(response.data.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -49,7 +49,7 @@ const Inquiries = () => {
 
   const handleStatusUpdate = async (id, newStatus) => {
     try {
-      await axios.put(`/api/inquiries/${id}`, { status: newStatus });
+      await axios.put(`${import.meta.env.VITE_API_URL}/inquiries/${id}`, { status: newStatus });
       await showSuccess(`Inquiry status updated to ${newStatus}!`, 'Updated');
       fetchInquiries();
       fetchStats();
@@ -66,7 +66,7 @@ const Inquiries = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`/api/inquiries/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/inquiries/${id}`);
         await showSuccess('Inquiry deleted successfully!', 'Deleted');
         fetchInquiries();
         fetchStats();

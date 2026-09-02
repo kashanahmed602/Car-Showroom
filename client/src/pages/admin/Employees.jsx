@@ -13,7 +13,7 @@ const Employees = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('/api/employees');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/employees`);
       setEmployees(response.data.data);
     } catch (error) {
       console.error('Error fetching employees:', error);
@@ -30,7 +30,7 @@ const Employees = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`/api/employees/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/employees/${id}`);
         await showSuccess('Employee deleted successfully!', 'Deleted');
         fetchEmployees();
       } catch (error) {
@@ -100,11 +100,10 @@ const Employees = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      employee.isActive
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
+                    className={`px-2 py-1 text-xs rounded-full ${employee.isActive
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                      }`}
                   >
                     {employee.isActive ? 'Active' : 'Inactive'}
                   </span>

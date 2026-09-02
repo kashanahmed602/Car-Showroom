@@ -24,7 +24,7 @@ const EmployeeForm = () => {
 
   const fetchEmployee = async () => {
     try {
-      const response = await axios.get(`/api/employees/${id}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/employees/${id}`);
       setFormData(response.data.data);
     } catch (error) {
       console.error('Error fetching employee:', error);
@@ -45,11 +45,11 @@ const EmployeeForm = () => {
 
       showLoading('Saving employee...');
       if (id) {
-        await axios.put(`/api/employees/${id}`, data);
+        await axios.put(`${import.meta.env.VITE_API_URL}/employees/${id}`, data);
         closeLoading();
         await showSuccess('Employee updated successfully!', 'Updated');
       } else {
-        await axios.post('/api/employees', data);
+        await axios.post(`${import.meta.env.VITE_API_URL}/employees`, data);
         closeLoading();
         await showSuccess('Employee created successfully!', 'Created');
       }

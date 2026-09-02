@@ -13,7 +13,7 @@ const Expenses = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await axios.get('/api/expenses');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/expenses`);
       setExpenses(response.data.data);
     } catch (error) {
       console.error('Error fetching expenses:', error);
@@ -30,7 +30,7 @@ const Expenses = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`/api/expenses/${id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/expenses/${id}`);
         await showSuccess('Expense deleted successfully!', 'Deleted');
         fetchExpenses();
       } catch (error) {
