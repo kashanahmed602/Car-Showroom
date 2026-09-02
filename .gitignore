@@ -9,6 +9,7 @@ yarn.lock
 .env.development.local
 .env.test.local
 .env.production.local
+showroom_data.sql
 
 # Build outputs
 dist/
