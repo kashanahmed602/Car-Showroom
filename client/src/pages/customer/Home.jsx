@@ -185,7 +185,7 @@ const PublicHome = () => {
                 {car.images && car.images.length > 0 ? (
                   <>
                     <img
-                      src={`http://localhost:5000${car.images[0].imageUrl}`}
+                      src={car.images[0].imageUrl}
                       alt={car.model}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />

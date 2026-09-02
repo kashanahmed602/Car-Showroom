@@ -168,7 +168,7 @@ const Wishlist = () => {
                   {item.car.images && item.car.images.length > 0 ? (
                     <>
                       <img
-                        src={`http://localhost:5000${item.car.images[0].imageUrl}`}
+                        src={item.car.images[0].imageUrl}
                         alt={item.car.model}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />

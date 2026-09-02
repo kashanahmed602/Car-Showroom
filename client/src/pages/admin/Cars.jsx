@@ -118,7 +118,7 @@ const Cars = () => {
                 <td className="px-6 py-4 whitespace-nowrap">
                   {car.images && car.images.length > 0 ? (
                     <img
-                      src={`http://localhost:5000${car.images[0].imageUrl}`}
+                      src={car.images[0].imageUrl}
                       alt={car.model}
                       className="h-16 w-24 object-cover rounded"
                     />

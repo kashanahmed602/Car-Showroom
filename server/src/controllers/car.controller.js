@@ -326,7 +326,7 @@ export const uploadCarImages = async (req, res) => {
         }
 
         const { data } = supabase.storage
-          .from('car-images')
+          .from('car-showroom')
           .getPublicUrl(fileName);
 
         return prisma.carImage.create({

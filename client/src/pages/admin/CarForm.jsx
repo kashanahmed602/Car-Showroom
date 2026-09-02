@@ -380,7 +380,7 @@ const CarForm = () => {
                   <div key={image.id} className="relative group">
                     <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-all">
                       <img
-                        src={`http://localhost:5000${image.imageUrl}`}
+                        src={image.imageUrl}
                         alt="Car"
                         className="w-full h-full object-cover"
                       />

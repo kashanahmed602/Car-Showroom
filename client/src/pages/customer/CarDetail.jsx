@@ -138,7 +138,7 @@ const PublicCarDetail = () => {
                   }}
                 >
                   <img
-                    src={`http://localhost:5000${car.images[selectedImageIndex].imageUrl}`}
+                    src={car.images[selectedImageIndex].imageUrl}
                     alt={car.model}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -197,7 +197,7 @@ const PublicCarDetail = () => {
                           }`}
                       >
                         <img
-                          src={`http://localhost:5000${image.imageUrl}`}
+                          src={image.imageUrl}
                           alt={`${car.model} ${index + 1}`}
                           className="w-full h-full object-cover"
                         />
@@ -457,7 +457,7 @@ const PublicCarDetail = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={`http://localhost:5000${car.images[lightboxImageIndex].imageUrl}`}
+              src={car.images[lightboxImageIndex].imageUrl}
               alt={`${car.model} - Image ${lightboxImageIndex + 1}`}
               className="max-w-full max-h-full object-contain rounded-lg"
             />
@@ -484,7 +484,7 @@ const PublicCarDetail = () => {
                     }`}
                 >
                   <img
-                    src={`http://localhost:5000${image.imageUrl}`}
+                    src={image.imageUrl}
                     alt={`Thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
