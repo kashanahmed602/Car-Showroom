@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import supabase from '../config/supabase.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -221,47 +222,76 @@ export const updateCar = async (req, res) => {
 
 export const deleteCar = async (req, res) => {
   try {
-    // Check if car is sold
+    // 1. Car check karo
     const car = await prisma.car.findUnique({
       where: { id: req.params.id },
-      include: { sale: true }
+      include: {
+        sale: true,
+        images: true
+      }
     });
 
     if (!car) {
-      return res.status(404).json({ success: false, message: 'Car not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'Car not found'
+      });
     }
 
+    // 2. Sold car delete nahi hogi
     if (car.sale) {
-      return res.status(400).json({ success: false, message: 'Cannot delete a car that has been sold' });
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete a car that has been sold'
+      });
     }
 
-    // Delete images
-    const images = await prisma.carImage.findMany({
-      where: { carId: req.params.id }
-    });
+    // 3. Supabase se sari car images delete karo
+    const marker = '/storage/v1/object/public/car-showroom/';
 
-    for (const image of images) {
-      const imagePath = path.join(__dirname, '../../uploads', path.basename(image.imageUrl));
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
+    const imagePaths = car.images
+      .map(image => image.imageUrl.split(marker)[1])
+      .filter(Boolean);
+
+    if (imagePaths.length > 0) {
+      const { error } = await supabase.storage
+        .from('car-showroom')
+        .remove(imagePaths);
+
+      if (error) {
+        throw error;
       }
     }
 
+    // 4. Database se car delete karo
+    // Car delete hone ke sath images bhi delete honi chahiye
+    // agar Prisma relation mein onDelete: Cascade laga hua hai
     await prisma.car.delete({
       where: { id: req.params.id }
     });
 
-    res.json({ success: true, message: 'Car deleted successfully' });
+    res.json({
+      success: true,
+      message: 'Car and all images deleted successfully'
+    });
+
   } catch (error) {
     console.error('Delete car error:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server error'
+    });
   }
 };
 
 export const uploadCarImages = async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ success: false, message: 'No images provided' });
+      return res.status(400).json({
+        success: false,
+        message: 'No images provided'
+      });
     }
 
     const car = await prisma.car.findUnique({
@@ -269,11 +299,10 @@ export const uploadCarImages = async (req, res) => {
     });
 
     if (!car) {
-      // Delete uploaded files
-      req.files.forEach(file => {
-        fs.unlinkSync(file.path);
+      return res.status(404).json({
+        success: false,
+        message: 'Car not found'
       });
-      return res.status(404).json({ success: false, message: 'Car not found' });
     }
 
     const existingImages = await prisma.carImage.count({
@@ -281,29 +310,48 @@ export const uploadCarImages = async (req, res) => {
     });
 
     const images = await Promise.all(
-      req.files.map((file, index) => {
+      req.files.map(async (file, index) => {
+
+        const fileName = `cars/${Date.now()}-${file.originalname}`;
+
+        const { error } = await supabase.storage
+          .from('car-showroom')
+          .upload(fileName, file.buffer, {
+            contentType: file.mimetype,
+            upsert: false
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        const { data } = supabase.storage
+          .from('car-images')
+          .getPublicUrl(fileName);
+
         return prisma.carImage.create({
           data: {
             carId: req.params.id,
-            imageUrl: `/uploads/${file.filename}`,
+            imageUrl: data.publicUrl,
             isPrimary: existingImages === 0 && index === 0
           }
         });
       })
     );
 
-    res.json({ success: true, data: images });
+    res.json({
+      success: true,
+      data: images
+    });
+
   } catch (error) {
+
     console.error('Upload images error:', error);
-    // Clean up uploaded files on error
-    if (req.files) {
-      req.files.forEach(file => {
-        if (fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path);
-        }
-      });
-    }
-    res.status(500).json({ success: false, message: 'Server error' });
+
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server error'
+    });
   }
 };
 
@@ -350,28 +398,55 @@ export const updateCarImage = async (req, res) => {
 
 export const deleteCarImage = async (req, res) => {
   try {
+    // 1. Database se image find karo
     const image = await prisma.carImage.findUnique({
-      where: { id: req.params.imageId }
+      where: {
+        id: req.params.imageId
+      }
     });
 
     if (!image) {
-      return res.status(404).json({ success: false, message: 'Image not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'Image not found'
+      });
     }
 
-    // Delete file
-    const imagePath = path.join(__dirname, '../../uploads', path.basename(image.imageUrl));
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
+    // 2. Supabase public URL se file path nikalo
+    const marker = '/storage/v1/object/public/car-showroom/';
+
+    const imagePath = image.imageUrl.split(marker)[1];
+
+    // 3. Supabase Storage se image delete karo
+    if (imagePath) {
+      const { error } = await supabase.storage
+        .from('car-showroom')
+        .remove([imagePath]);
+
+      if (error) {
+        throw error;
+      }
     }
 
+    // 4. PostgreSQL database se image record delete karo
     await prisma.carImage.delete({
-      where: { id: req.params.imageId }
+      where: {
+        id: req.params.imageId
+      }
     });
 
-    res.json({ success: true, message: 'Image deleted successfully' });
+    res.json({
+      success: true,
+      message: 'Image deleted successfully'
+    });
+
   } catch (error) {
     console.error('Delete image error:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server error'
+    });
   }
 };
 
